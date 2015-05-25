@@ -52,14 +52,18 @@ module SimpleForm
           return wrapper(name, options, &block)
         end
 
-        if options && options.keys != [:wrap_with]
-          ActiveSupport::Deprecation.warn "Passing :tag, :class and others to use is deprecated. " \
-            "Please invoke b.use #{name.inspect}, :wrap_with => #{options.inspect} instead."
-          options = { :wrap_with => options }
-        end
+        # if options && options.keys != [:wrap_with]
+        #   ActiveSupport::Deprecation.warn "Passing :tag, :class and others to use is deprecated. " \
+        #     "Please invoke b.use #{name.inspect}, :wrap_with => #{options.inspect} instead."
+        #   options = { :wrap_with => options }
+        # end
 
-        if options && wrapper = options[:wrap_with]
-          @components << Single.new(name, wrapper)
+        if options && options[:wrap_with]
+          @options[:"#{name}_html"] = options.except(:wrap_with)
+          @components << Single.new(name, options[:wrap_with])
+        elsif options
+          @options[:"#{name}_html"] = options
+          @components << name
         else
           @components << name
         end
