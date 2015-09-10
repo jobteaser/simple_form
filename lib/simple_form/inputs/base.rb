@@ -189,8 +189,17 @@ module SimpleForm
 
       def merge_wrapper_options(options, wrapper_options)
         if wrapper_options
-          options.merge(wrapper_options) do |_, oldval, newval|
-            if Array === oldval
+          options.merge(wrapper_options) do |key, oldval, newval|
+            # Special case for JobTeaser to enforce old behaviour
+            # If a class was provided explicitely, it replaces even the
+            # default wrapper class.
+            if key == :class
+              if oldval.last.is_a?(String)
+                oldval
+              else
+                oldval + Array(newval)
+              end
+            elsif Array === oldval
               oldval + Array(newval)
             end
           end
